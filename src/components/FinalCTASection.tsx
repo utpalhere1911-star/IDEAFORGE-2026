@@ -1,0 +1,3 @@
+export default function FinalCTASection() {
+  return <section className="final-cta section-shell" aria-labelledby="cta-title"><span className="cta-orbit cta-orbit-one" aria-hidden="true" /><span className="cta-orbit cta-orbit-two" aria-hidden="true" /><span className="cta-star" aria-hidden="true">✳</span><div className="cta-label">06 <span>/</span> Make your move</div><h2 id="cta-title">Your next<br />idea might<br /><em>start today.</em></h2><p>Every great idea starts with a moment of curiosity.</p><a className="light-button" href="#top">Get ready <span aria-hidden="true">↗</span></a><div className="cta-bottom-line"><span>IDEATHON 2026</span><span>GCU / 09.10.26</span></div></section>;
+}
