@@ -1,0 +1,1 @@
+fetch('https://bansiczyhzkdgovcmlpy.supabase.co/rest/v1/', { headers: { 'apikey': 'sb_publishable_qclCkSMWbtEob-U4SXqYEA_dzh9islx' } }).then(r => r.json()).then(data => console.log(JSON.stringify(data.definitions.projects, null, 2))).catch(console.error);

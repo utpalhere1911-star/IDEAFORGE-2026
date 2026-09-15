@@ -21,12 +21,7 @@ const FAQS: FAQItem[] = [
     answer:
       "The ideathon is open to all enrolled undergraduate and postgraduate students from recognized colleges and universities. Participants can apply individually or form interdisciplinary teams.",
   },
-  {
-    id: "03",
-    question: "What is the total prize pool and recognition?",
-    answer:
-      "IDEAFORGE 2026 features a confirmed total prize pool of ₹10,000, along with direct incubation pathways, mentorship support, and investor visibility via the GCU Incubation Centre.",
-  },
+
   {
     id: "04",
     question: "When will the detailed timeline and guidelines be published?",

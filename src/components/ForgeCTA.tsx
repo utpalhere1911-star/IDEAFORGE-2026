@@ -29,7 +29,7 @@ export default function ForgeCTA() {
 
           <p className="cta-body-copy">
             Bring your concept to the stage, connect with fellow student innovators,
-            and compete for a confirmed ₹10,000 prize pool with direct incubation support
+            and compete for awards and direct incubation support
             at Girijananda Chowdhury University, Guwahati.
           </p>
 

@@ -7,10 +7,11 @@ import StepPersonal from "./_components/StepPersonal";
 import StepAcademic from "./_components/StepAcademic";
 import StepTeam from "./_components/StepTeam";
 import StepProject from "./_components/StepProject";
-import StepProblem from "./_components/StepProblem";
+
 import StepReview from "./_components/StepReview";
 import StepSubmitted from "./_components/StepSubmitted";
-import { submitRegistration } from "./actions";
+import { submitRegistration, getUploadUrl } from "./actions";
+import { supabase } from "@/lib/supabase/client";
 
 /* ─── Types ─── */
 
@@ -20,24 +21,30 @@ export interface TeamMember {
 }
 
 export interface RegistrationData {
-  /* Personal */
+  // Step 1: Personal
   fullName: string;
   email: string;
   phone: string;
-  /* Academic */
+
+  // Step 2: Academic
   institution: string;
   course: string;
   department: string;
   year: string;
-  /* Team */
+
+  // Step 3: Team
   teamName: string;
   members: TeamMember[];
-  /* Project */
+
+  // Step 4: Project
+  problemStatementId: string;
   projectTitle: string;
   shortDescription: string;
   problemAddressed: string;
   proposedSolution: string;
-  /* Problem Statement */
+  projectFile: File | null;
+
+  // Step 5: (Removed or renamed, preserving legacy fields if still used in state transitions)
   problemStatement: string;
 }
 
@@ -46,7 +53,7 @@ export interface StepErrors {
 }
 
 type Action =
-  | { type: "UPDATE_FIELD"; field: keyof RegistrationData; value: string }
+  | { type: "UPDATE_FIELD"; field: keyof RegistrationData; value: RegistrationData[keyof RegistrationData] }
   | { type: "UPDATE_MEMBERS"; members: TeamMember[] }
   | { type: "SET_STEP"; step: number }
   | { type: "SET_ERRORS"; errors: StepErrors }
@@ -76,11 +83,18 @@ const initialData: RegistrationData = {
   department: "",
   year: "",
   teamName: "",
-  members: [{ name: "", role: "Team Lead" }],
+  members: [
+    { name: "", role: "Team Leader" },
+    { name: "", role: "Member" },
+    { name: "", role: "Member" },
+    { name: "", role: "Member" },
+  ],
+  problemStatementId: "",
   projectTitle: "",
   shortDescription: "",
   problemAddressed: "",
   proposedSolution: "",
+  projectFile: null,
   problemStatement: "",
 };
 
@@ -114,7 +128,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         isSubmitting: false,
         submitted: true,
-        currentStep: 7,
+        currentStep: 6,
         registrationId: action.registrationId,
       };
     case "SUBMIT_ERROR":
@@ -135,8 +149,7 @@ export const STEPS = [
   { num: 2, id: "academic", label: "Academic" },
   { num: 3, id: "team", label: "Team" },
   { num: 4, id: "project", label: "Project" },
-  { num: 5, id: "problem", label: "Problem" },
-  { num: 6, id: "review", label: "Review" },
+  { num: 5, id: "review", label: "Review" },
 ] as const;
 
 /* ─── Validators ─── */
@@ -177,13 +190,25 @@ function validateTeam(data: RegistrationData): StepErrors {
 
 function validateProject(data: RegistrationData): StepErrors {
   const e: StepErrors = {};
-  if (!data.projectTitle.trim()) e.projectTitle = "Project title is required.";
-  if (!data.shortDescription.trim())
-    e.shortDescription = "Short description is required.";
-  if (!data.problemAddressed.trim())
-    e.problemAddressed = "Problem statement is required.";
-  if (!data.proposedSolution.trim())
-    e.proposedSolution = "Proposed solution is required.";
+  if (!data.problemStatementId) {
+    e.problemStatementId = "Please select a problem statement or choose Open Project.";
+  }
+  if (data.projectFile) {
+    const validExtensions = ['.ppt', '.pptx'];
+    const validTypes = [
+      'application/vnd.ms-powerpoint', 
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    ];
+    
+    const isExtensionValid = validExtensions.some(ext => data.projectFile!.name.toLowerCase().endsWith(ext));
+    const isTypeValid = validTypes.includes(data.projectFile!.type);
+    
+    if (!isExtensionValid && !isTypeValid) {
+      e.projectFile = "Only PPT and PPTX files are allowed.";
+    } else if (data.projectFile.size > 1048576) {
+      e.projectFile = "File size must be 1 MB or smaller.";
+    }
+  }
   return e;
 }
 
@@ -212,14 +237,19 @@ export default function RegisterPage() {
 
   /* Scroll form area to top on step change */
   useEffect(() => {
-    if (formAreaRef.current) {
-      formAreaRef.current.scrollTo({ top: 0, behavior: "instant" });
-    }
+    if (!formAreaRef.current) return;
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [state.currentStep]);
 
+  /* Scroll to top when submitError appears */
+  useEffect(() => {
+    if (state.submitError && formAreaRef.current) {
+      formAreaRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [state.submitError]);
+
   const updateField = useCallback(
-    (field: keyof RegistrationData, value: string) => {
+    <K extends keyof RegistrationData>(field: K, value: RegistrationData[K]) => {
       dispatch({ type: "UPDATE_FIELD", field, value });
     },
     []
@@ -274,11 +304,46 @@ export default function RegisterPage() {
 
     dispatch({ type: "SUBMIT_START" });
 
+    let uploadedFilePath = "";
     try {
-      const result = await submitRegistration(state.data);
+      
+      if (state.data.projectFile) {
+        // 1. Get signed url
+        const uploadUrlRes = await getUploadUrl(state.data.projectFile.name, state.data.projectFile.size);
+        if (!uploadUrlRes.success || !uploadUrlRes.token || !uploadUrlRes.path) {
+           throw new Error(uploadUrlRes.error || "Failed to get upload URL");
+        }
+        
+        // 2. Upload the file directly to Supabase storage
+        if (supabase) {
+           const { error: uploadError } = await supabase.storage
+             .from("ideaforge-submissions")
+             .uploadToSignedUrl(uploadUrlRes.path, uploadUrlRes.token, state.data.projectFile);
+             
+           if (uploadError) throw new Error(uploadError.message);
+        } else {
+           // Fallback to fetch PUT if supabase client is not available
+           const res = await fetch(uploadUrlRes.signedUrl!, { method: 'PUT', body: state.data.projectFile });
+           if (!res.ok) throw new Error("File upload failed.");
+        }
+        uploadedFilePath = uploadUrlRes.path;
+      }
+
+      const formData = new FormData();
+      const { projectFile, ...restData } = state.data;
+      
+      const payload = {
+        ...restData,
+        uploadedFilePath,
+        uploadedFileName: projectFile ? projectFile.name : "",
+      };
+      
+      formData.append("data", JSON.stringify(payload));
+
+      const result = await submitRegistration(formData);
 
       if (result.success && result.registrationId) {
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 5; i++) {
           dispatch({ type: "MARK_COMPLETED", step: i });
         }
         dispatch({
@@ -286,6 +351,14 @@ export default function RegisterPage() {
           registrationId: result.registrationId,
         });
       } else {
+        // If registration fails but we uploaded a file, try to clean it up
+        if (uploadedFilePath && supabase) {
+          try {
+            await supabase.storage.from("ideaforge-submissions").remove([uploadedFilePath]);
+          } catch (e) {
+            console.error("Failed to clean up orphaned file", e);
+          }
+        }
         dispatch({
           type: "SUBMIT_ERROR",
           error:
@@ -293,7 +366,16 @@ export default function RegisterPage() {
             "Unable to submit registration. Please try again.",
         });
       }
-    } catch {
+    } catch (err) {
+      console.error("Submission error:", err);
+      // Clean up orphaned file on unexpected errors
+      if (uploadedFilePath && supabase) {
+        try {
+          await supabase.storage.from("ideaforge-submissions").remove([uploadedFilePath]);
+        } catch (e) {
+          console.error("Failed to clean up orphaned file", e);
+        }
+      }
       dispatch({
         type: "SUBMIT_ERROR",
         error:
@@ -340,24 +422,10 @@ export default function RegisterPage() {
         );
       case 5:
         return (
-          <StepProblem
-            data={state.data}
-            onChange={updateField}
-          />
-        );
-      case 6:
-        return (
           <StepReview
             data={state.data}
             goToStep={goToStep}
             submitError={state.submitError}
-          />
-        );
-      case 7:
-        return (
-          <StepSubmitted
-            data={state.data}
-            registrationId={state.registrationId}
           />
         );
       default:
@@ -365,7 +433,7 @@ export default function RegisterPage() {
     }
   }
 
-  if (state.submitted && state.currentStep === 7) {
+  if (state.submitted && state.currentStep === 6) {
     return (
       <div className="reg-page">
         <RegisterHeader />
@@ -406,7 +474,7 @@ export default function RegisterPage() {
               </div>
               <div className="reg-meta-row">
                 <span className="reg-meta-key">Prize</span>
-                <span className="reg-meta-val">₹10,000</span>
+                <span className="reg-meta-val">To Be Announced Soon</span>
               </div>
             </div>
           </aside>
@@ -422,8 +490,16 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div className="reg-step-content">
-              {renderStep()}
+            <div className="reg-content-pane">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                <div className="reg-step-content">
+                  {renderStep()}
+                </div>
+              </form>
             </div>
 
             {/* ─── Navigation ─── */}
@@ -441,7 +517,7 @@ export default function RegisterPage() {
                 )}
               </div>
               <div className="reg-nav-right">
-                {state.currentStep < 6 && (
+                {state.currentStep < 5 && (
                   <button
                     type="button"
                     className="lime-button reg-btn-next"
@@ -450,9 +526,9 @@ export default function RegisterPage() {
                     Continue <span aria-hidden="true">→</span>
                   </button>
                 )}
-                {state.currentStep === 6 && (
+                {state.currentStep === 5 && (
                   <button
-                    type="button"
+                    type="submit"
                     className="lime-button reg-btn-next"
                     onClick={handleSubmit}
                     disabled={state.isSubmitting}
@@ -465,7 +541,7 @@ export default function RegisterPage() {
                       </>
                     ) : (
                       <>
-                        Submit Registration <span aria-hidden="true">↗</span>
+                        SUBMIT <span aria-hidden="true">↗</span>
                       </>
                     )}
                   </button>

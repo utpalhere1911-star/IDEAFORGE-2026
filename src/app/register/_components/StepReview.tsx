@@ -1,4 +1,5 @@
 import type { RegistrationData } from "../page";
+import { problemStatements } from "@/data/problemStatements";
 
 interface Props {
   data: RegistrationData;
@@ -51,6 +52,11 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function StepReview({ data, goToStep, submitError }: Props) {
+  const selectedOfficial = problemStatements.find((ps) => ps.id === data.problemStatementId);
+  const problemStatementDisplay = data.problemStatementId === "OPEN_PROJECT" 
+    ? "Open Project" 
+    : selectedOfficial?.title || "Not selected";
+
   return (
     <div className="reg-step">
       <div className="reg-step-header">
@@ -117,38 +123,9 @@ export default function StepReview({ data, goToStep, submitError }: Props) {
 
         <ReviewSection num="04" title="Project" onEdit={() => goToStep(4)}>
           <dl className="review-grid">
-            <ReviewRow label="Title" value={data.projectTitle} />
+            <ReviewRow label="Problem Statement" value={problemStatementDisplay} />
+            <ReviewRow label="File Attached" value={data.projectFile ? data.projectFile.name : "None"} />
           </dl>
-          <div className="review-longtext">
-            <span className="review-key">Description</span>
-            <p className="review-longtext-val">
-              {data.shortDescription || "—"}
-            </p>
-          </div>
-          <div className="review-longtext">
-            <span className="review-key">Problem</span>
-            <p className="review-longtext-val">
-              {data.problemAddressed || "—"}
-            </p>
-          </div>
-          <div className="review-longtext">
-            <span className="review-key">Solution</span>
-            <p className="review-longtext-val">
-              {data.proposedSolution || "—"}
-            </p>
-          </div>
-        </ReviewSection>
-
-        <ReviewSection num="05" title="Problem Statement" onEdit={() => goToStep(5)}>
-          <div className="review-longtext">
-            <span className="review-key">Notes</span>
-            <p className="review-longtext-val">
-              {data.problemStatement || "No additional notes provided."}
-            </p>
-          </div>
-          <p className="review-tba-note">
-            Official problem statements have not been announced yet.
-          </p>
         </ReviewSection>
       </div>
     </div>

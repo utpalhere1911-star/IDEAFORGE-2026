@@ -10,8 +10,39 @@ export interface RegisterResult {
   error?: string;
 }
 
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export async function getUploadUrl(fileName: string, fileSize?: number) {
+  try {
+    if (fileSize !== undefined && fileSize > 1048576) {
+      return { success: false, error: "File size must be 1 MB or smaller." };
+    }
+
+    const lowerName = fileName.toLowerCase();
+    if (!lowerName.endsWith('.ppt') && !lowerName.endsWith('.pptx')) {
+      return { success: false, error: "Only PPT and PPTX files are allowed." };
+    }
+
+    const supabase = getSupabaseServerClient();
+    const sanitizedFilename = fileName.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+    const filePath = `uploads/${Date.now()}_${Math.random().toString(36).substring(7)}_${sanitizedFilename}`;
+    
+    const { data, error } = await supabase.storage
+      .from("ideaforge-submissions")
+      .createSignedUploadUrl(filePath);
+
+    if (error || !data) {
+      return { success: false, error: error?.message || "Failed to generate upload URL" };
+    }
+    
+    return { success: true, signedUrl: data.signedUrl, token: data.token, path: filePath };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Internal error generating upload URL";
+    return { success: false, error: errorMsg };
+  }
+}
+
+
+
+
 
 /**
  * Server-side validator for registration data.
@@ -68,19 +99,14 @@ function validateRegistrationData(data: RegistrationData): string | null {
   }
 
   /* 04 — Project */
-  if (!data.projectTitle || !data.projectTitle.trim()) {
-    return "Project title is required.";
-  }
-  if (!data.shortDescription || !data.shortDescription.trim()) {
-    return "Short description is required.";
-  }
-  if (!data.problemAddressed || !data.problemAddressed.trim()) {
-    return "Problem addressed is required.";
-  }
-  if (!data.proposedSolution || !data.proposedSolution.trim()) {
-    return "Proposed solution is required.";
+  if (!data.problemStatementId) {
+    return "Please select a problem statement or OPEN PROJECT.";
   }
 
+  /* 05 — File Upload (Optional) */
+  // Validation for file size/type is now handled purely on client side
+  // because the file is uploaded directly to Supabase storage.
+  
   return null;
 }
 
@@ -89,8 +115,19 @@ function validateRegistrationData(data: RegistrationData): string | null {
  * Executes transactional multi-table creation with rollback cleanup on failure.
  */
 export async function submitRegistration(
-  rawData: RegistrationData
+  formData: FormData
 ): Promise<RegisterResult> {
+  const rawDataString = formData.get("data") as string;
+  if (!rawDataString) return { success: false, error: "Missing data payload." };
+  
+  let rawData: RegistrationData;
+  try {
+    rawData = JSON.parse(rawDataString);
+    rawData.projectFile = formData.get("file") as File | null;
+  } catch {
+    return { success: false, error: "Invalid data payload format." };
+  }
+
   // 1. Server-side validation
   const validationError = validateRegistrationData(rawData);
   if (validationError) {
@@ -98,7 +135,7 @@ export async function submitRegistration(
   }
 
   // 2. Normalize and sanitize data
-  const data: RegistrationData = {
+  const data: RegistrationData & { uploadedFilePath?: string; uploadedFileName?: string } = {
     fullName: rawData.fullName.trim(),
     email: rawData.email.trim().toLowerCase(),
     phone: rawData.phone.trim(),
@@ -115,7 +152,12 @@ export async function submitRegistration(
     shortDescription: rawData.shortDescription.trim(),
     problemAddressed: rawData.problemAddressed.trim(),
     proposedSolution: rawData.proposedSolution.trim(),
+    problemStatementId: rawData.problemStatementId,
     problemStatement: rawData.problemStatement ? rawData.problemStatement.trim() : "",
+    projectFile: null,
+    // Expect the path and filename from the client
+    uploadedFilePath: (rawData as unknown as Record<string, unknown>).uploadedFilePath as string | undefined,
+    uploadedFileName: (rawData as unknown as Record<string, unknown>).uploadedFileName as string | undefined,
   };
 
   console.log("[Supabase Server Config]", {
@@ -205,23 +247,15 @@ export async function submitRegistration(
     }
 
     // 6. Create Project record in `projects` table
-    const problemStatementId = UUID_REGEX.test(data.problemStatement)
-      ? data.problemStatement
-      : null;
-
     const projectPayload = {
       team_id: createdTeamId,
-      title: data.projectTitle,
-      description: data.shortDescription,
-      problem: data.problemAddressed,
-      solution: data.proposedSolution,
-      problem_statement_id: problemStatementId,
+      problem_statement_id: null,
     };
 
     const projectResult = await supabase
       .from("projects")
       .insert(projectPayload)
-      .select("id, title")
+      .select("id")
       .single();
 
     if (projectResult.error || !projectResult.data) {
@@ -253,6 +287,26 @@ export async function submitRegistration(
 
     const registrationId = registrationResult.data.id;
 
+    // 8. Store file metadata in database if a file was uploaded
+    const uploadedFilePath = (data as unknown as Record<string, unknown>).uploadedFilePath as string | undefined;
+    const uploadedFileName = (data as unknown as Record<string, unknown>).uploadedFileName as string | undefined;
+    
+    if (uploadedFilePath && uploadedFileName) {
+      // 9. Store file metadata in database
+      const fileRecordResult = await supabase
+        .from("registration_files")
+        .insert({
+          registration_id: registrationId,
+          team_id: createdTeamId,
+          file_name: uploadedFileName,
+          storage_path: uploadedFilePath,
+        });
+
+      if (fileRecordResult.error) {
+        throw new Error(`Failed to save file metadata: ${fileRecordResult.error.message}`);
+      }
+    }
+
     return {
       success: true,
       registrationId,
@@ -265,6 +319,14 @@ export async function submitRegistration(
     if (createdTeamId) {
       try {
         console.warn(`[Registration Rollback] Cleaning up orphaned team ${createdTeamId}`);
+        // Clean up files in storage
+        const { data: files } = await supabase.storage.from("ideaforge-submissions").list(createdTeamId);
+        if (files && files.length > 0) {
+          const pathsToRemove = files.map(f => `${createdTeamId}/${f.name}`);
+          await supabase.storage.from("ideaforge-submissions").remove(pathsToRemove);
+        }
+
+        await supabase.from("registration_files").delete().eq("team_id", createdTeamId);
         await supabase.from("registrations").delete().eq("team_id", createdTeamId);
         await supabase.from("projects").delete().eq("team_id", createdTeamId);
         await supabase.from("members").delete().eq("team_id", createdTeamId);

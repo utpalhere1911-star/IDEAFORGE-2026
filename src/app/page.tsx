@@ -4,7 +4,6 @@ import { useState } from "react";
 import ForgeCTA from "@/components/ForgeCTA";
 import ForgeFooter from "@/components/ForgeFooter";
 import HeroSection from "@/components/HeroSection";
-import Navbar from "@/components/Navbar";
 import ProblemStatementsFeature from "@/components/ProblemStatementsFeature";
 import ProcessSection from "@/components/ProcessSection";
 import FaqFeature from "@/components/FaqFeature";
@@ -39,7 +38,6 @@ export default function Home() {
 
   return (
     <div className="forge-page" id="top">
-      <Navbar />
       <main>
         <HeroSection />
         <ProblemStatementsFeature 

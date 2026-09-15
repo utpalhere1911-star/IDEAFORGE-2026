@@ -380,7 +380,7 @@ a {
 /* Hero Section */
 .forge-hero {
   min-height: 850px;
-  padding-top: 150px;
+  padding-top: 40px;
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -3844,7 +3844,7 @@ a {
 
   .forge-hero {
     min-height: auto;
-    padding-top: 105px;
+    padding-top: 32px;
     padding-bottom: 45px;
     position: relative;
     display: flex;
@@ -4395,7 +4395,7 @@ a {
   }
 
   .forge-hero {
-    padding-top: 92px;
+    padding-top: 24px;
     padding-bottom: 35px;
   }
 

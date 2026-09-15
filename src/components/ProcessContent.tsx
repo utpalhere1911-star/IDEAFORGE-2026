@@ -39,7 +39,7 @@ const TIMELINE_STAGES: TimelineStage[] = [
     step: "05",
     tag: "STAGE / 05",
     title: "Results",
-    desc: "Awards, cash prizes and induction into GCU incubation pathways.",
+    desc: "Awards and induction into GCU incubation pathways.",
     status: "TBA",
   },
 ];
