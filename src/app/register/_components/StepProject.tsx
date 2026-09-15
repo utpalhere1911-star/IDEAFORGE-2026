@@ -114,30 +114,31 @@ export default function StepProject({ data, errors, onChange }: Props) {
 
         <div className="reg-field">
           <label htmlFor="reg-projectFile" className="reg-label">
-            UPLOAD PPT <span className="reg-optional" style={{ color: '#94a3b8', fontSize: '0.9em', fontWeight: 'normal', marginLeft: '4px' }}>(OPTIONAL)</span>
+            UPLOAD PPT, PPTX OR PDF <span className="reg-optional" style={{ color: '#94a3b8', fontSize: '0.9em', fontWeight: 'normal', marginLeft: '4px' }}>(OPTIONAL)</span>
           </label>
           <p className="reg-hint" id="hint-projectFile">
-            Optional — you can upload your presentation if you want (.ppt, .pptx max 1MB).
+            Optional • Maximum 1 MB
           </p>
           <input
             id="reg-projectFile"
             type="file"
-            accept=".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            accept=".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pdf,application/pdf"
             className={`reg-input ${errors.projectFile ? "reg-input--error" : ""}`}
             onChange={(e) => {
               const file = e.target.files?.[0] || null;
               if (file) {
-                const validExtensions = ['.ppt', '.pptx'];
+                const validExtensions = ['.ppt', '.pptx', '.pdf'];
                 const validTypes = [
                   'application/vnd.ms-powerpoint', 
-                  'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+                  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                  'application/pdf'
                 ];
                 
                 const isExtensionValid = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
                 const isTypeValid = validTypes.includes(file.type);
                 
                 if (!isExtensionValid && !isTypeValid) {
-                  alert("Only PPT and PPTX files are allowed.");
+                  alert("Only PPT, PPTX, and PDF files are allowed.");
                   e.target.value = "";
                   onChange("projectFile", null);
                   return;

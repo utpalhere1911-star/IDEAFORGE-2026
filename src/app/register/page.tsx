@@ -194,17 +194,18 @@ function validateProject(data: RegistrationData): StepErrors {
     e.problemStatementId = "Please select a problem statement or choose Open Project.";
   }
   if (data.projectFile) {
-    const validExtensions = ['.ppt', '.pptx'];
+    const validExtensions = ['.ppt', '.pptx', '.pdf'];
     const validTypes = [
       'application/vnd.ms-powerpoint', 
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/pdf'
     ];
     
     const isExtensionValid = validExtensions.some(ext => data.projectFile!.name.toLowerCase().endsWith(ext));
     const isTypeValid = validTypes.includes(data.projectFile!.type);
     
     if (!isExtensionValid && !isTypeValid) {
-      e.projectFile = "Only PPT and PPTX files are allowed.";
+      e.projectFile = "Only PPT, PPTX, and PDF files are allowed.";
     } else if (data.projectFile.size > 1048576) {
       e.projectFile = "File size must be 1 MB or smaller.";
     }

@@ -17,8 +17,8 @@ export async function getUploadUrl(fileName: string, fileSize?: number) {
     }
 
     const lowerName = fileName.toLowerCase();
-    if (!lowerName.endsWith('.ppt') && !lowerName.endsWith('.pptx')) {
-      return { success: false, error: "Only PPT and PPTX files are allowed." };
+    if (!lowerName.endsWith('.ppt') && !lowerName.endsWith('.pptx') && !lowerName.endsWith('.pdf')) {
+      return { success: false, error: "Only PPT, PPTX, and PDF files are allowed." };
     }
 
     const supabase = getSupabaseServerClient();
