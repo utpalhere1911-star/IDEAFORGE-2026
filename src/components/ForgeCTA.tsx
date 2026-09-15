@@ -1,5 +1,4 @@
 import Link from "next/link";
-import GuidelinesOverlay from "@/components/GuidelinesOverlay";
 
 export default function ForgeCTA() {
   return (
@@ -38,10 +37,6 @@ export default function ForgeCTA() {
             <Link className="lime-button cta-primary-btn" href="/register">
               Register now <span aria-hidden="true">↗</span>
             </Link>
-            <GuidelinesOverlay
-              label="Review guidelines"
-              className="hero-secondary-btn cta-guidelines-trigger"
-            />
           </div>
         </div>
 

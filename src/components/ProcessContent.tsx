@@ -44,47 +44,20 @@ const TIMELINE_STAGES: TimelineStage[] = [
   },
 ];
 
-export default function ForgeTimeline() {
+export default function ProcessContent() {
   return (
-    <section
-      className="forge-timeline section-shell section-pad"
-      id="timeline"
-      aria-labelledby="forge-timeline-title"
-    >
-      {/* Topline Metadata */}
-      <div className="section-topline">
-        <div className="section-index">
-          05 <span>/</span> Timeline
-        </div>
-        <div className="section-topline-meta">
-          <span>EVENT ROADMAP</span>
-          <span className="meta-dot" aria-hidden="true">•</span>
-          <span>05 STAGES</span>
+    <div className="overlay-process-content">
+      <div className="timeline-header-meta" style={{ marginBottom: "24px" }}>
+        <p className="editorial-header-desc" style={{ color: "var(--paper)" }}>
+          Five structured milestones guiding student innovators from initial concept
+          submission to live jury presentations and institutional incubation.
+        </p>
+        <div className="timeline-notice-badge" style={{ marginTop: "16px" }}>
+          <span className="notice-pulse-dot" />
+          <span>DETAILED SCHEDULE COMING SOON</span>
         </div>
       </div>
 
-      {/* Editorial Header */}
-      <div className="editorial-section-header">
-        <div className="editorial-title-col">
-          <span className="section-kicker">THE COMPETITION ROADMAP</span>
-          <h2 id="forge-timeline-title" className="editorial-headline">
-            <span className="headline-solid">THE ROAD TO</span>
-            <span className="headline-outline">IDEAFORGE.</span>
-          </h2>
-        </div>
-        <div className="timeline-header-meta">
-          <p className="editorial-header-desc">
-            Five structured milestones guiding student innovators from initial concept
-            submission to live jury presentations and institutional incubation.
-          </p>
-          <div className="timeline-notice-badge">
-            <span className="notice-pulse-dot" />
-            <span>DETAILED SCHEDULE COMING SOON</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Editorial Journey Timeline System */}
       <div className="timeline-journey-grid" role="list">
         {TIMELINE_STAGES.map((stage, idx) => (
           <div
@@ -115,6 +88,6 @@ export default function ForgeTimeline() {
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

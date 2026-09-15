@@ -1,5 +1,16 @@
 import Image from "next/image";
 
+const organizerContacts = {
+  secretary: {
+    name: "Secretary Name",
+    phone: "+91 99999 99999",
+  },
+  jointSecretary: {
+    name: "Joint Secretary Name",
+    phone: "+91 88888 88888",
+  },
+};
+
 export default function ForgeFooter() {
   return (
     <footer className="forge-footer-root" role="contentinfo">
@@ -28,28 +39,26 @@ export default function ForgeFooter() {
             </div>
           </div>
 
-          {/* Quick Navigation */}
+          {/* Secretary Contact */}
           <div className="footer-nav-col">
-            <span className="footer-col-header">EXPLORE</span>
-            <nav className="footer-nav-list" aria-label="Footer Navigation">
-              <a href="#about">01 / The Starting Point</a>
-              <a href="#themes">02 / Themes</a>
-              <a href="#why">03 / Why IDEAFORGE</a>
-              <a href="#prizes">04 / Prizes</a>
-              <a href="#timeline">05 / Timeline</a>
-            </nav>
+            <span className="footer-col-header">SECRETARY</span>
+            <div className="footer-nav-list">
+              <span style={{ color: 'var(--paper)', fontWeight: 500 }}>{organizerContacts.secretary.name}</span>
+              <a href={`tel:${organizerContacts.secretary.phone.replace(/\s+/g, '')}`} style={{ color: 'var(--muted)' }}>
+                {organizerContacts.secretary.phone}
+              </a>
+            </div>
           </div>
 
-          {/* Guidelines & Support */}
+          {/* Joint Secretary Contact */}
           <div className="footer-nav-col">
-            <span className="footer-col-header">INFORMATION</span>
-            <nav className="footer-nav-list" aria-label="Information Links">
-              <a href="#guidelines">06 / Guidelines</a>
-              <a href="#updates">07 / Updates</a>
-              <a href="#faq">08 / FAQ</a>
-              <a href="#cta">09 / Register</a>
-              <a href="mailto:incubation@gcu.ac.in">Contact Organizers ↗</a>
-            </nav>
+            <span className="footer-col-header">JOINT SECRETARY</span>
+            <div className="footer-nav-list">
+              <span style={{ color: 'var(--paper)', fontWeight: 500 }}>{organizerContacts.jointSecretary.name}</span>
+              <a href={`tel:${organizerContacts.jointSecretary.phone.replace(/\s+/g, '')}`} style={{ color: 'var(--muted)' }}>
+                {organizerContacts.jointSecretary.phone}
+              </a>
+            </div>
           </div>
 
           {/* Location & Metadata */}
