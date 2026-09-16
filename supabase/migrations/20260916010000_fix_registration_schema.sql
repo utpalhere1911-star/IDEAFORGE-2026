@@ -1,0 +1,7 @@
+BEGIN;
+
+ALTER TABLE public.members
+ALTER COLUMN email DROP NOT NULL;
+
+COMMIT;
+`

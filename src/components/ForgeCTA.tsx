@@ -15,7 +15,7 @@ export default function ForgeCTA() {
         <div className="section-topline-meta">
           <span>THE NEXT STEP</span>
           <span className="meta-dot" aria-hidden="true">•</span>
-          <span>16–17 OCT 2026</span>
+          <span>22 SEP 2026</span>
         </div>
       </div>
 
@@ -47,7 +47,7 @@ export default function ForgeCTA() {
           </div>
           <div className="cef-col">
             <span className="cef-tag">LOCATION</span>
-            <strong className="cef-val">GCU Campus, Guwahati</strong>
+            <strong className="cef-val">Guwahati, Assam</strong>
           </div>
           <div className="cef-col">
             <span className="cef-tag">ORGANIZER</span>

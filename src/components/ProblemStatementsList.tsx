@@ -15,9 +15,14 @@ export default function ProblemStatementsList({
         return (
           <div className="ps-item-flat" key={ps.id} role="listitem">
             <div className="ps-item-flat-header">
-              <span className="ps-item-id">{displayId}</span>
-              <h3 className="ps-item-title">{ps.title}</h3>
-              <span className="ps-item-category">{ps.category}</span>
+              <div className="ps-item-id-badge">
+                <span className="ps-item-id-label">PS /</span>
+                <span className="ps-item-id-number">{displayId}</span>
+              </div>
+              <div className="ps-item-title-group">
+                <h3 className="ps-item-title">{ps.title}</h3>
+                <span className="ps-item-category">{ps.description}</span>
+              </div>
             </div>
             <button
               type="button"

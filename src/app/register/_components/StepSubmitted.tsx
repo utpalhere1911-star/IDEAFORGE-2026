@@ -7,7 +7,10 @@ interface Props {
   registrationId?: string | null;
 }
 
+import { problemStatements } from "@/data/problemStatements";
+
 export default function StepSubmitted({ data, registrationId }: Props) {
+  const selectedOfficial = problemStatements.find((ps) => ps.id === data.problemStatementId);
   return (
     <div className="reg-submitted">
       <div className="reg-submitted-inner">
@@ -62,16 +65,16 @@ export default function StepSubmitted({ data, registrationId }: Props) {
             <span className="reg-submitted-detail-val">{data.fullName}</span>
           </div>
           <div className="reg-submitted-detail-row">
-            <span className="reg-submitted-detail-key">Project</span>
-            <span className="reg-submitted-detail-val">{data.projectTitle}</span>
+            <span className="reg-submitted-detail-key">Domain</span>
+            <span className="reg-submitted-detail-val">{selectedOfficial?.title || "Unknown"}</span>
           </div>
           <div className="reg-submitted-detail-row">
             <span className="reg-submitted-detail-key">Event Dates</span>
-            <span className="reg-submitted-detail-val">16–17 October 2026</span>
+            <span className="reg-submitted-detail-val">22 September 2026</span>
           </div>
           <div className="reg-submitted-detail-row">
             <span className="reg-submitted-detail-key">Venue</span>
-            <span className="reg-submitted-detail-val">GIMT Building, Room 408</span>
+            <span className="reg-submitted-detail-val">Venue TBA</span>
           </div>
         </div>
 

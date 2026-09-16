@@ -27,10 +27,8 @@ export interface RegistrationData {
   phone: string;
 
   // Step 2: Academic
-  institution: string;
   course: string;
-  department: string;
-  year: string;
+  semester: string;
 
   // Step 3: Team
   teamName: string;
@@ -38,14 +36,7 @@ export interface RegistrationData {
 
   // Step 4: Project
   problemStatementId: string;
-  projectTitle: string;
-  shortDescription: string;
-  problemAddressed: string;
-  proposedSolution: string;
   projectFile: File | null;
-
-  // Step 5: (Removed or renamed, preserving legacy fields if still used in state transitions)
-  problemStatement: string;
 }
 
 export interface StepErrors {
@@ -78,24 +69,17 @@ const initialData: RegistrationData = {
   fullName: "",
   email: "",
   phone: "",
-  institution: "",
   course: "",
-  department: "",
-  year: "",
+  semester: "",
   teamName: "",
   members: [
     { name: "", role: "Team Leader" },
-    { name: "", role: "Member" },
-    { name: "", role: "Member" },
-    { name: "", role: "Member" },
+    { name: "", role: "Team Member 1" },
+    { name: "", role: "Team Member 2" },
+    { name: "", role: "Team Member 3" },
   ],
   problemStatementId: "",
-  projectTitle: "",
-  shortDescription: "",
-  problemAddressed: "",
-  proposedSolution: "",
   projectFile: null,
-  problemStatement: "",
 };
 
 function reducer(state: State, action: Action): State {
@@ -172,10 +156,8 @@ function validatePersonal(data: RegistrationData): StepErrors {
 
 function validateAcademic(data: RegistrationData): StepErrors {
   const e: StepErrors = {};
-  if (!data.institution.trim()) e.institution = "Institution is required.";
   if (!data.course.trim()) e.course = "Course / Program is required.";
-  if (!data.department.trim()) e.department = "Department is required.";
-  if (!data.year) e.year = "Year / Semester is required.";
+  if (!data.semester) e.semester = "Semester is required.";
   return e;
 }
 
@@ -467,11 +449,11 @@ export default function RegisterPage() {
             <div className="reg-sidebar-meta">
               <div className="reg-meta-row">
                 <span className="reg-meta-key">Date</span>
-                <span className="reg-meta-val">16–17 October 2026</span>
+                <span className="reg-meta-val">22 September 2026</span>
               </div>
               <div className="reg-meta-row">
                 <span className="reg-meta-key">Venue</span>
-                <span className="reg-meta-val">GIMT Building, Room 408</span>
+                <span className="reg-meta-val">Venue TBA</span>
               </div>
               <div className="reg-meta-row">
                 <span className="reg-meta-key">Prize</span>

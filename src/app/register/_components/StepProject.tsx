@@ -9,7 +9,6 @@ interface Props {
 
 export default function StepProject({ data, errors, onChange }: Props) {
 
-  const isOpenProject = data.problemStatementId === "OPEN_PROJECT";
   const selectedOfficial = problemStatements.find((ps) => ps.id === data.problemStatementId);
 
   return (
@@ -46,7 +45,6 @@ export default function StepProject({ data, errors, onChange }: Props) {
                 {ps.title}
               </option>
             ))}
-            <option value="OPEN_PROJECT">OPEN PROJECT</option>
           </select>
           {errors.problemStatementId && (
             <p className="reg-error" id="err-problemStatementId" role="alert">
@@ -62,53 +60,7 @@ export default function StepProject({ data, errors, onChange }: Props) {
           </div>
         )}
 
-        {isOpenProject && (
-          <>
-            <div className="reg-field" style={{ marginTop: '1.5rem' }}>
-              <label htmlFor="reg-projectTitle" className="reg-label">
-                Project Title{" "}
-                <span className="reg-required" aria-label="required">*</span>
-              </label>
-              <input
-                id="reg-projectTitle"
-                type="text"
-                className={`reg-input ${errors.projectTitle ? "reg-input--error" : ""}`}
-                value={data.projectTitle}
-                onChange={(e) => onChange("projectTitle", e.target.value)}
-                placeholder="Enter your project title"
-                aria-describedby={errors.projectTitle ? "err-projectTitle" : undefined}
-                aria-invalid={!!errors.projectTitle}
-              />
-              {errors.projectTitle && (
-                <p className="reg-error" id="err-projectTitle" role="alert">
-                  {errors.projectTitle}
-                </p>
-              )}
-            </div>
 
-            <div className="reg-field">
-              <label htmlFor="reg-shortDescription" className="reg-label">
-                Describe Your Project{" "}
-                <span className="reg-required" aria-label="required">*</span>
-              </label>
-              <textarea
-                id="reg-shortDescription"
-                className={`reg-input reg-textarea ${errors.shortDescription ? "reg-input--error" : ""}`}
-                value={data.shortDescription}
-                onChange={(e) => onChange("shortDescription", e.target.value)}
-                placeholder="Briefly describe your idea and what it does..."
-                rows={5}
-                aria-describedby={errors.shortDescription ? "err-shortDescription" : undefined}
-                aria-invalid={!!errors.shortDescription}
-              />
-              {errors.shortDescription && (
-                <p className="reg-error" id="err-shortDescription" role="alert">
-                  {errors.shortDescription}
-                </p>
-              )}
-            </div>
-          </>
-        )}
 
         <div className="reg-step-rule" aria-hidden="true" style={{ margin: '2rem 0' }} />
 

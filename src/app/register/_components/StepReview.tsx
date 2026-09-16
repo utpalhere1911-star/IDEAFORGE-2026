@@ -53,9 +53,6 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 
 export default function StepReview({ data, goToStep, submitError }: Props) {
   const selectedOfficial = problemStatements.find((ps) => ps.id === data.problemStatementId);
-  const problemStatementDisplay = data.problemStatementId === "OPEN_PROJECT" 
-    ? "Open Project" 
-    : selectedOfficial?.title || "Not selected";
 
   return (
     <div className="reg-step">
@@ -96,10 +93,8 @@ export default function StepReview({ data, goToStep, submitError }: Props) {
 
         <ReviewSection num="02" title="Academic" onEdit={() => goToStep(2)}>
           <dl className="review-grid">
-            <ReviewRow label="Institution" value={data.institution} />
             <ReviewRow label="Course" value={data.course} />
-            <ReviewRow label="Department" value={data.department} />
-            <ReviewRow label="Year" value={data.year} />
+            <ReviewRow label="Semester" value={data.semester} />
           </dl>
         </ReviewSection>
 
@@ -123,7 +118,19 @@ export default function StepReview({ data, goToStep, submitError }: Props) {
 
         <ReviewSection num="04" title="Project" onEdit={() => goToStep(4)}>
           <dl className="review-grid">
-            <ReviewRow label="Problem Statement" value={problemStatementDisplay} />
+            <div className="review-row" style={{ gridColumn: "1 / -1" }}>
+              <dt className="review-key">Problem Statement</dt>
+              <dd className="review-val">
+                {selectedOfficial ? (
+                  <div>
+                    <strong>{selectedOfficial.id.replace("IF26-", "0")} — {selectedOfficial.title}</strong>
+                    <p style={{ marginTop: 4, color: "var(--dim)", fontSize: "13px", whiteSpace: "pre-wrap" }}>{selectedOfficial.description}</p>
+                  </div>
+                ) : (
+                  <span className="review-empty">Not selected</span>
+                )}
+              </dd>
+            </div>
             <ReviewRow label="File Attached" value={data.projectFile ? data.projectFile.name : "None"} />
           </dl>
         </ReviewSection>

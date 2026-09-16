@@ -12,8 +12,8 @@ export default function EventInfoStrip() {
               <span className="info-cell-code">01</span>
             </div>
             <div className="info-cell-content">
-              <strong className="info-cell-val">16–17</strong>
-              <span className="info-cell-sub">Oct 2026</span>
+              <strong className="info-cell-val">22</strong>
+              <span className="info-cell-sub">September 2026</span>
             </div>
           </div>
           <div className="info-cell info-cell-venue-centered">
@@ -22,8 +22,8 @@ export default function EventInfoStrip() {
               <span className="info-cell-code">02</span>
             </div>
             <div className="info-cell-content">
-              <strong className="info-cell-val">GIMT Building</strong>
-              <span className="info-cell-sub">Room 408</span>
+              <strong className="info-cell-val">Venue TBA</strong>
+              <span className="info-cell-sub">Guwahati, Assam</span>
             </div>
           </div>
         </div>

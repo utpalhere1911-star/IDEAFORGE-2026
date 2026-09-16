@@ -6,17 +6,16 @@ interface Props {
   onChange: (field: keyof RegistrationData, value: string) => void;
 }
 
-const YEAR_OPTIONS = [
+const SEMESTER_OPTIONS = [
   "",
-  "1st Year",
-  "2nd Year",
-  "3rd Year",
-  "4th Year",
-  "5th Year",
-  "Postgraduate — 1st Year",
-  "Postgraduate — 2nd Year",
-  "PhD",
-  "Other",
+  "Semester 1",
+  "Semester 2",
+  "Semester 3",
+  "Semester 4",
+  "Semester 5",
+  "Semester 6",
+  "Semester 7",
+  "Semester 8",
 ];
 
 export default function StepAcademic({ data, errors, onChange }: Props) {
@@ -37,91 +36,44 @@ export default function StepAcademic({ data, errors, onChange }: Props) {
 
       <div className="reg-fields">
         <div className="reg-field">
-          <label htmlFor="reg-institution" className="reg-label">
-            University / Institution{" "}
+          <label htmlFor="reg-course" className="reg-label">
+            Course / Program{" "}
             <span className="reg-required" aria-label="required">*</span>
           </label>
           <input
-            id="reg-institution"
+            id="reg-course"
             type="text"
-            className={`reg-input ${errors.institution ? "reg-input--error" : ""}`}
-            value={data.institution}
-            onChange={(e) => onChange("institution", e.target.value)}
-            placeholder="e.g. Girijananda Chowdhury University"
-            autoComplete="organization"
-            aria-describedby={errors.institution ? "err-institution" : undefined}
-            aria-invalid={!!errors.institution}
+            className={`reg-input ${errors.course ? "reg-input--error" : ""}`}
+            value={data.course}
+            onChange={(e) => onChange("course", e.target.value)}
+            placeholder="e.g. B.Tech Computer Science"
+            aria-describedby={errors.course ? "err-course" : undefined}
+            aria-invalid={!!errors.course}
           />
-          {errors.institution && (
-            <p className="reg-error" id="err-institution" role="alert">
-              {errors.institution}
+          {errors.course && (
+            <p className="reg-error" id="err-course" role="alert">
+              {errors.course}
             </p>
           )}
         </div>
 
-        <div className="reg-field-row">
-          <div className="reg-field">
-            <label htmlFor="reg-course" className="reg-label">
-              Course / Program{" "}
-              <span className="reg-required" aria-label="required">*</span>
-            </label>
-            <input
-              id="reg-course"
-              type="text"
-              className={`reg-input ${errors.course ? "reg-input--error" : ""}`}
-              value={data.course}
-              onChange={(e) => onChange("course", e.target.value)}
-              placeholder="e.g. B.Tech Computer Science"
-              aria-describedby={errors.course ? "err-course" : undefined}
-              aria-invalid={!!errors.course}
-            />
-            {errors.course && (
-              <p className="reg-error" id="err-course" role="alert">
-                {errors.course}
-              </p>
-            )}
-          </div>
-
-          <div className="reg-field">
-            <label htmlFor="reg-department" className="reg-label">
-              Department{" "}
-              <span className="reg-required" aria-label="required">*</span>
-            </label>
-            <input
-              id="reg-department"
-              type="text"
-              className={`reg-input ${errors.department ? "reg-input--error" : ""}`}
-              value={data.department}
-              onChange={(e) => onChange("department", e.target.value)}
-              placeholder="e.g. Computer Science & Engineering"
-              aria-describedby={errors.department ? "err-department" : undefined}
-              aria-invalid={!!errors.department}
-            />
-            {errors.department && (
-              <p className="reg-error" id="err-department" role="alert">
-                {errors.department}
-              </p>
-            )}
-          </div>
-        </div>
-
         <div className="reg-field" style={{ maxWidth: 320 }}>
-          <label htmlFor="reg-year" className="reg-label">
-            Year / Semester{" "}
+          <label htmlFor="reg-semester" className="reg-label">
+            Semester{" "}
             <span className="reg-required" aria-label="required">*</span>
           </label>
           <div className="reg-select-wrap">
             <select
-              id="reg-year"
-              className={`reg-input reg-select ${errors.year ? "reg-input--error" : ""}`}
-              value={data.year}
-              onChange={(e) => onChange("year", e.target.value)}
-              aria-describedby={errors.year ? "err-year" : undefined}
-              aria-invalid={!!errors.year}
+              id="reg-semester"
+              className={`reg-input reg-select ${errors.semester ? "reg-input--error" : ""}`}
+              value={data.semester}
+              onChange={(e) => onChange("semester", e.target.value)}
+              aria-describedby={errors.semester ? "err-semester" : undefined}
+              aria-invalid={!!errors.semester}
             >
-              {YEAR_OPTIONS.map((opt) => (
+              {SEMESTER_OPTIONS.map((opt) => (
                 <option key={opt} value={opt} disabled={opt === ""}>
-                  {opt || "Select year / semester"}
+                  {opt || "Select semester"}
                 </option>
               ))}
             </select>
@@ -131,9 +83,9 @@ export default function StepAcademic({ data, errors, onChange }: Props) {
               </svg>
             </span>
           </div>
-          {errors.year && (
-            <p className="reg-error" id="err-year" role="alert">
-              {errors.year}
+          {errors.semester && (
+            <p className="reg-error" id="err-semester" role="alert">
+              {errors.semester}
             </p>
           )}
         </div>

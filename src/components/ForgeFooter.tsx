@@ -2,12 +2,12 @@ import Image from "next/image";
 
 const organizerContacts = {
   secretary: {
-    name: "Secretary Name",
-    phone: "+91 99999 99999",
+    name: "Anamika Jaiswal",
+    phone: "+91 81350 09464",
   },
   jointSecretary: {
-    name: "Joint Secretary Name",
-    phone: "+91 88888 88888",
+    name: "Sourav Barua",
+    phone: "+91 70853 49788",
   },
 };
 
@@ -39,25 +39,24 @@ export default function ForgeFooter() {
             </div>
           </div>
 
-          {/* Secretary Contact */}
-          <div className="footer-nav-col">
-            <span className="footer-col-header">SECRETARY</span>
-            <div className="footer-nav-list">
-              <span style={{ color: 'var(--paper)', fontWeight: 500 }}>{organizerContacts.secretary.name}</span>
-              <a href={`tel:${organizerContacts.secretary.phone.replace(/\s+/g, '')}`} style={{ color: 'var(--muted)' }}>
-                {organizerContacts.secretary.phone}
-              </a>
-            </div>
-          </div>
-
-          {/* Joint Secretary Contact */}
-          <div className="footer-nav-col">
-            <span className="footer-col-header">JOINT SECRETARY</span>
-            <div className="footer-nav-list">
-              <span style={{ color: 'var(--paper)', fontWeight: 500 }}>{organizerContacts.jointSecretary.name}</span>
-              <a href={`tel:${organizerContacts.jointSecretary.phone.replace(/\s+/g, '')}`} style={{ color: 'var(--muted)' }}>
-                {organizerContacts.jointSecretary.phone}
-              </a>
+          {/* Support Panel */}
+          <div className="footer-support-panel">
+            <span className="footer-col-header">SUPPORT / CONTACT</span>
+            <div className="footer-support-contacts">
+              <div className="support-contact-item">
+                <span className="support-label">01 / SECRETARY</span>
+                <span className="support-name">{organizerContacts.secretary.name}</span>
+                <a href={`tel:${organizerContacts.secretary.phone.replace(/\s+/g, '')}`} className="support-phone">
+                  {organizerContacts.secretary.phone}
+                </a>
+              </div>
+              <div className="support-contact-item">
+                <span className="support-label">02 / JOINT SECRETARY</span>
+                <span className="support-name">{organizerContacts.jointSecretary.name}</span>
+                <a href={`tel:${organizerContacts.jointSecretary.phone.replace(/\s+/g, '')}`} className="support-phone">
+                  {organizerContacts.jointSecretary.phone}
+                </a>
+              </div>
             </div>
           </div>
 
@@ -65,14 +64,13 @@ export default function ForgeFooter() {
           <div className="footer-meta-col">
             <span className="footer-col-header">VENUE & DETAILS</span>
             <address className="footer-address">
-              Girijananda Chowdhury University<br />
-              NH-37, Hatkhowapara, Azara<br />
-              Guwahati, Assam 781017
+              Venue TBA<br />
+              Guwahati, Assam
             </address>
             <div className="footer-date-tag">
               <span>EDITION 2026</span>
               <span className="meta-dot" aria-hidden="true">•</span>
-              <span>16–17 OCT 2026</span>
+              <span>22 SEP 2026</span>
             </div>
           </div>
         </div>
